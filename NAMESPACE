@@ -2,3 +2,8 @@
 
 S3method(cvx.quad.est,default)
 S3method(iso.lin.est,default)
+S3method(predict,cvx.quad.est)
+S3method(predict,iso.lin.est)
+S3method(print,cvx.quad.est)
+S3method(print,iso.lin.est)
+importFrom(simest,cvx.lse.reg)

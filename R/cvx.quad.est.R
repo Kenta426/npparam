@@ -3,9 +3,9 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
 }
 
 .fit.cvx.reg <- function(x, y, L){
-  cvx_final <- cvx.lse.reg(x, y - L*x^2)
+  cvx_final <- simest::cvx.lse.reg(x, y - L*x^2)
   cvx.risk <- mean((y - cvx_final$fit.values - L*x^2)^2)
-  concave_final <- cvx.lse.reg(x, -(y - L*x^2))
+  concave_final <- simest::cvx.lse.reg(x, -(y - L*x^2))
   concave.risk <- mean((y + concave_final$fit.values - L*x^2)^2)
   if(cvx.risk < concave.risk){
     cvx_model <- cvx_final; risk <- cvx.risk; convex <- TRUE
@@ -68,6 +68,7 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
 #' @param ...
 #'
 #' @return
+#' @importFrom simest cvx.lse.reg
 #' @export
 #'
 #' @examples
@@ -98,6 +99,14 @@ cvx.quad.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
   return(res)
 }
 
+#' Title
+#'
+#' @param obj
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print.cvx.quad.est <- function(obj){
   cat("Call:\n")
   print(obj$call)
@@ -111,16 +120,25 @@ print.cvx.quad.est <- function(obj){
   print(obj$optimizer)
 }
 
-predict.cvx.quad.est <- function(obj, newdata=NULL){
+#' Title
+#'
+#' @param obj
+#' @param newdata
+#'
+#' @return
+#' @export
+#'
+#' @examples
+predict.cvx.quad.est <- function(object, newdata=NULL){
   if(is.null(newdata)){
-    newdata <- obj$x
+    newdata <- object$x
   }
   idx <- order(newdata); newdata <- newdata[idx]
-  if(obj$convex){
-    y.hat <- predict(obj$g, newdata=newdata) + obj$l.value * newdata^2
+  if(object$convex){
+    y.hat <- predict(object$g, newdata=newdata) + object$l.value * newdata^2
   }
   else{
-    y.hat <- -predict(obj$g, newdata=newdata) + obj$l.value * newdata^2
+    y.hat <- -predict(object$g, newdata=newdata) + object$l.value * newdata^2
   }
   return(y.hat[order(idx)])
 }

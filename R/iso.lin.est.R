@@ -1,12 +1,14 @@
+# Estimating L-Lipschitz function as isotonic regression + linear function
+
 iso.lin.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   UseMethod("iso.lin.est")
 }
 
 .fit.iso.reg <- function(x, y, L){
-  iso_final.incr <- pava(y - L*x)
+  iso_final.incr <- Iso::pava(y - L*x)
   iso_model.incr <- stepfun(x = x, y = c(iso_final.incr[1], iso_final.incr))
   incr.risk <- mean((y - iso_model.incr(x) - L*x)^2)
-  iso_final.decr <- pava(y - L*x, decreasing = TRUE)
+  iso_final.decr <- Iso::pava(y - L*x, decreasing = TRUE)
   iso_model.decr <- stepfun(x = x, y = c(iso_final.decr[1], iso_final.decr))
   decr.risk <- mean((y - iso_model.decr(x) - L*x)^2)
   if(decr.risk < incr.risk){
@@ -88,6 +90,14 @@ iso.lin.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
   return(res)
 }
 
+#' Title
+#'
+#' @param obj
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print.iso.lin.est <- function(obj){
   cat("Call:\n")
   print(obj$call)
@@ -99,6 +109,15 @@ print.iso.lin.est <- function(obj){
   print(obj$optimizer)
 }
 
+#' Title
+#'
+#' @param obj
+#' @param newdata
+#'
+#' @return
+#' @export
+#'
+#' @examples
 predict.iso.lin.est <- function(obj, newdata=NULL){
   if(is.null(newdata)){
     newdata <- obj$x
