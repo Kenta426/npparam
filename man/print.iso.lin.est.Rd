@@ -2,18 +2,17 @@
 % Please edit documentation in R/iso.lin.est.R
 \name{print.iso.lin.est}
 \alias{print.iso.lin.est}
-\title{Title}
+\title{Inherit print function for \code{iso.lin.est}}
 \usage{
-\method{print}{iso.lin.est}(obj)
+\method{print}{iso.lin.est}(obj, ...)
 }
 \arguments{
-\item{obj}{}
-}
-\value{
+\item{obj}{An object with S3 class \code{iso.lin.est}.}
 
+\item{...}{Additional control parameter}
 }
 \description{
-Title
+Inherit print function for \code{iso.lin.est}
 }
 \examples{
 n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)

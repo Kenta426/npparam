@@ -2,18 +2,26 @@
 % Please edit documentation in R/cvx.quad.est.R
 \name{cvx.quad.est}
 \alias{cvx.quad.est}
-\title{Title}
+\title{Nonparametric LSE for twice differentiable function}
 \usage{
 cvx.quad.est(x, y, L = NULL, run.optim = TRUE, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{\code{n x 1} numeric vector of observed covariate vector}
+
+\item{y}{\code{n x 1} numeric vector of observed response vector}
+
+\item{L}{A scalar for the quadratic parameter. If not specified, L is
+data-adaptively selected via optimization or cross-validation}
+
+\item{run.optim}{A Boolean parameter for selecting optimization or
+cross-validation. If TRUE, it performs optimization. Default is TRUE.}
 }
 \value{
-
+An object with S3 class \code{cvx.quad.est}.
 }
 \description{
-Title
+Nonparametric LSE for twice differentiable function
 }
 \examples{
 n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)

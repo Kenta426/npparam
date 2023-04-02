@@ -2,18 +2,28 @@
 % Please edit documentation in R/iso.lin.est.R
 \name{iso.lin.est.default}
 \alias{iso.lin.est.default}
-\title{Title}
+\title{Nonparametric LSE for Lipschitz function}
 \usage{
 \method{iso.lin.est}{default}(x, y, L = NULL, run.optim = TRUE, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{\code{n x 1} numeric vector of observed covariate vector}
+
+\item{y}{\code{n x 1} numeric vector of observed response vector}
+
+\item{L}{A scalar for the linear parameter. If not specified, L is
+data-adaptively selected via optimization or cross-validation}
+
+\item{run.optim}{A Boolean parameter for selecting optimization or
+cross-validation. If TRUE, it performs optimization. Default is TRUE.}
+
+\item{...}{Additional control parameters}
 }
 \value{
-
+An object with S3 class \code{iso.lin.est}.
 }
 \description{
-Title
+Nonparametric LSE for Lipschitz function
 }
 \examples{
 n <- 100

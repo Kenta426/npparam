@@ -2,18 +2,21 @@
 % Please edit documentation in R/cvx.quad.est.R
 \name{predict.cvx.quad.est}
 \alias{predict.cvx.quad.est}
-\title{Title}
+\title{Inherit predict function for \code{cvx.quad.est}}
 \usage{
 \method{predict}{cvx.quad.est}(object, newdata = NULL)
 }
 \arguments{
-\item{newdata}{}
+\item{newdata}{\code{n x 1} numeric vector of new covariate vector. If not
+specified, use the covariate vector from training.}
+
+\item{obj}{An object with S3 class \code{cvx.quad.est}.}
 }
 \value{
-
+\code{n x 1} numeric vector of predicted values.
 }
 \description{
-Title
+Inherit predict function for \code{cvx.quad.est}
 }
 \examples{
 n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)

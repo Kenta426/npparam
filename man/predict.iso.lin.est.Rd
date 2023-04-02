@@ -2,18 +2,21 @@
 % Please edit documentation in R/iso.lin.est.R
 \name{predict.iso.lin.est}
 \alias{predict.iso.lin.est}
-\title{Title}
+\title{Inherit predict function for \code{iso.lin.est}}
 \usage{
 \method{predict}{iso.lin.est}(obj, newdata = NULL)
 }
 \arguments{
-\item{newdata}{}
+\item{obj}{An object with S3 class \code{iso.lin.est}.}
+
+\item{newdata}{\code{n x 1} numeric vector of new covariate vector. If not
+specified, use the covariate vector from training.}
 }
 \value{
-
+\code{n x 1} numeric vector of predicted values.
 }
 \description{
-Title
+Inherit predict function for \code{iso.lin.est}
 }
 \examples{
 n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
