@@ -15,3 +15,8 @@
 \description{
 Title
 }
+\examples{
+n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+res.est <- iso.lin.est(x, y)
+print(res.est)
+}

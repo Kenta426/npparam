@@ -1,7 +1,25 @@
+#' Title
+#'
+#' @param x
+#' @param y
+#' @param L
+#' @param run.optim
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+#' res.est <- cvx.quad.est(x, y)
+#' y.pred <- predict(res.est) # fitted value
+#' y.pred <- predict(res.est, newdata=runif(n, -1, 1)) # predict new data
 cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   UseMethod("cvx.quad.est")
 }
 
+
+#' Helper function for fitting convex (or concave) function
 .fit.cvx.reg <- function(x, y, L){
   cvx_final <- simest::cvx.lse.reg(x, y - L*x^2)
   cvx.risk <- mean((y - cvx_final$fit.values - L*x^2)^2)
@@ -17,12 +35,15 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   return(res)
 }
 
-.run.cross.validation.cvx <- function(x, y, val=1/4, L0=0){
-  n <- length(x); learn.n <- n*(1-val)
+#' Helper function for performing CV for the quadratic parameter
+.run.cross.validation.cvx <- function(x, y, L0=0){
+  # split data into train/validation
+  n <- length(x); learn.n <- as.integer(n-sqrt(n))
   train.id <- sort(sample(seq_len(n), size =learn.n))
   x.train <- x[train.id]; x.val <- x[-train.id]
   y.train <- y[train.id]; y.val <- y[-train.id]
-  L.list <- seq(L0, (L0+1)*log(n), length.out=n/2)
+  # create a list of L values to run CV
+  L.list <- seq(L0, (L0+100)*log(n), length.out=n/2)
   sim.one <- function(l){
     reg.tr <- .fit.cvx.reg(x.train, y.train, L=l)
     if(reg.tr$convex){
@@ -33,13 +54,14 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
     }
     mean((y.val-y.hat)^2)
   }
-  opt.res <- optimise(sim.one, lower = L0, upper = (1+L0)*log(n),
+  opt.res <- optimise(sim.one, lower = L0, upper = (100+L0)*log(n),
                       maximum = FALSE)
   list(l.opt = opt.res$minimum, risk =opt.res$objective)
 }
 
-.run.optimizer.cvx <- function(x, y, val=1/4, L0=0){
-  n <- length(x); learn.n <- n*(1-val)
+#' Helper function for running optimizer for the quadratic parameter
+.run.optimizer.cvx <- function(x, y, L0=0){
+  n <- length(x); learn.n <- as.integer(n-sqrt(n))
   train.id <- sort(sample(seq_len(n), size =learn.n))
   x.train <- x[train.id]; x.val <- x[-train.id]
   y.train <- y[train.id]; y.val <- y[-train.id]
@@ -53,7 +75,7 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
     }
     mean((y.val-y.hat)^2)
   }
-  opt.res <- optimise(sim.one, lower = L0, upper = (1+L0)*log(n),
+  opt.res <- optimise(sim.one, lower = L0, upper = (100+L0)*log(n),
                       maximum = FALSE)
   list(l.opt = opt.res$minimum, risk =opt.res$objective)
 }
@@ -68,13 +90,13 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
 #' @param ...
 #'
 #' @return
-#' @importFrom simest cvx.lse.reg
 #' @export
 #'
 #' @examples
+#' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+#' res.est <- cvx.quad.est(x, y)
 cvx.quad.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
-  idx <- order(x)
-  x <- x[idx]; y <- y[idx]
+  idx <- order(x); x <- x[idx]; y <- y[idx]
   # TODO: check input format
   if(run.optim){
     param.selector <- .run.optimizer.cvx; optimizer <- "optimise"
@@ -91,7 +113,8 @@ cvx.quad.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
     est.res <- .fit.cvx.reg(x, y, L)
     cvx_model <- est.res$reg; risk <- est.res$risk; convex=est.res$convex
   }
-  res <- list(x.values = x, y.values = y, l.value=L, g=cvx_model, risk=risk,
+  res <- list(x.values = x[order(idx)], y.values = y[order(idx)], l.value=L,
+              g=cvx_model, risk=risk,
               convex=convex, optimizer = optimizer)
   res$call <- match.call()
 
@@ -107,6 +130,9 @@ cvx.quad.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
 #' @export
 #'
 #' @examples
+#' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+#' res.est <- cvx.quad.est(x, y)
+#' print(res.est)
 print.cvx.quad.est <- function(obj){
   cat("Call:\n")
   print(obj$call)
@@ -129,6 +155,10 @@ print.cvx.quad.est <- function(obj){
 #' @export
 #'
 #' @examples
+#' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+#' res.est <- cvx.quad.est(x, y)
+#' y.pred <- predict(res.est) # fitted value
+#' y.pred <- predict(res.est, newdata=runif(n, -1, 1)) # predict new data
 predict.cvx.quad.est <- function(object, newdata=NULL){
   if(is.null(newdata)){
     newdata <- object$x
@@ -142,14 +172,3 @@ predict.cvx.quad.est <- function(object, newdata=NULL){
   }
   return(y.hat[order(idx)])
 }
-
-# # example
-# n <- 500
-# x <- runif(n,-1,1)
-# y <- sin(x*4) + rnorm(n,0,0.05)
-# res <- cvx.quad.est(x, y, run.optim = TRUE)
-# res
-# y.hat <- predict(res)
-# plot(res$x.values, res$y.values, pch=".")
-# lines(res$x.values, y.hat, col="red")
-

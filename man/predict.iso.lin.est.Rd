@@ -15,3 +15,9 @@
 \description{
 Title
 }
+\examples{
+n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
+res.est <- iso.lin.est(x, y)
+y.pred <- predict(res.est) # fitted value
+y.pred <- predict(res.est, newdata=runif(n, -1, 1)) # predict new data
+}
