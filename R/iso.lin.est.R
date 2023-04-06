@@ -49,7 +49,7 @@ iso.lin.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   x.train <- x[train.id]; x.val <- x[-train.id]
   y.train <- y[train.id]; y.val <- y[-train.id]
   # create a list of L values to run CV
-  L.list <- seq(L0, (L0+1)*log(n), length.out=n/2)
+  L.list <- seq(-log10(n), log10(n), length.out=as.integer(n/20))
   sim.one <- function(l){
     reg.tr <- .fit.iso.reg(x.train, y.train, L=l)
     y.hat <- reg.tr$reg(x.val) + l*x.val
@@ -73,7 +73,7 @@ iso.lin.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
     mean((y.val-y.hat)^2)
   }
   # run optimizer to find the best L parameter
-  opt.res <- optimise(sim.one, lower=L0, upper=(L0+1)*log(n),
+  opt.res <- optimise(sim.one, lower=-log10(n), upper=log10(n),
                       maximum = FALSE)
   # return L with the smallest validation error
   return(list(l.opt=opt.res$minimum, risk=opt.res$objective))

@@ -47,7 +47,7 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   x.train <- x[train.id]; x.val <- x[-train.id]
   y.train <- y[train.id]; y.val <- y[-train.id]
   # create a list of L values to run CV
-  L.list <- seq(L0, (L0+100)*log(n), length.out=n/2)
+  L.list <- seq(-10*log10(n), 10*log10(n), length.out=n/20)
   sim.one <- function(l){
     reg.tr <- .fit.cvx.reg(x.train, y.train, L=l)
     if(reg.tr$convex){
@@ -79,7 +79,8 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
     mean((y.val-y.hat)^2)
   }
   # run optimizer to find the best L parameter
-  opt.res <- optimise(sim.one, lower = L0, upper = (100+L0)*log(n),
+  cat("running optimizer...")
+  opt.res <- optimise(sim.one, lower = -log10(n), upper = log10(n),
                       maximum = FALSE)
   # return L with the smallest validation error
   return(list(l.opt = opt.res$minimum, risk =opt.res$objective))
@@ -127,10 +128,9 @@ cvx.quad.est.default <- function(x, y, L=NULL, run.optim=TRUE, ...){
 
 #' Inherit print function for \code{cvx.quad.est}
 #'
-#' @param obj An object with S3 class \code{iso.lin.est}.
+#' @param obj An object with S3 class \code{cvx.quad.est}.
 #' @param ... Additional control parameter
 #' @export
-#'
 #' @examples
 #' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)
 #' res.est <- cvx.quad.est(x, y)
@@ -154,7 +154,6 @@ print.cvx.quad.est <- function(obj, ...){
 #' @param newdata \code{n x 1} numeric vector of new covariate vector. If not
 #'  specified, use the covariate vector from training.
 #' @return \code{n x 1} numeric vector of predicted values.
-#'
 #' @export
 #' @examples
 #' n <- 100; x <- runif(n, -1, 1); y <- sin(x*4) + rnorm(n, 0, 0.1)

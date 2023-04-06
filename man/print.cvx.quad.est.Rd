@@ -7,7 +7,7 @@
 \method{print}{cvx.quad.est}(obj, ...)
 }
 \arguments{
-\item{obj}{An object with S3 class \code{iso.lin.est}.}
+\item{obj}{An object with S3 class \code{cvx.quad.est}.}
 
 \item{...}{Additional control parameter}
 }

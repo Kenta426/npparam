@@ -2,16 +2,25 @@
 % Please edit documentation in R/additive.iso.est.R
 \name{additive.iso.est}
 \alias{additive.iso.est}
-\title{Title}
+\title{Nonparametric LSE for additive L-Lipscitz functions}
 \usage{
-additive.iso.est(x, y, L = NULL, run.optim = TRUE, ...)
+additive.iso.est(x, y, L = NULL, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{\code{n x 1} numeric vector of observed covariate vector}
+
+\item{y}{\code{n x 1} numeric vector of observed response vector}
 }
 \value{
-
+An object with S3 class \code{additive.iso.est}.
 }
 \description{
-Title
+Nonparametric LSE for additive L-Lipscitz functions
+}
+\examples{
+n <- 100*2; x <- matrix(runif(n*2, -1, 1), ncol=2);
+y <- abs(x[,1]) - abs(x[,2]) + rnorm(n, 0, 0.1)
+res.est <- additive.iso.est(x, y)
+y.pred <- predict(res.est) # fitted value
+y.pred <- predict(res.est, newdata=matrix(runif(n*2, -1, 1), ncol=2))
 }

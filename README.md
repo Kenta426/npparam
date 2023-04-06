@@ -1,2 +1,2 @@
 # npparam
-Nonparametric regression with parametric adaptivity 
+Nonparametric LSEs with parametric adaptivity 

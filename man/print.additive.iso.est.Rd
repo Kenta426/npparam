@@ -2,16 +2,21 @@
 % Please edit documentation in R/additive.iso.est.R
 \name{print.additive.iso.est}
 \alias{print.additive.iso.est}
-\title{Title}
+\title{Inherit print function for \code{additive.iso.est}}
 \usage{
-\method{print}{additive.iso.est}(obj)
+\method{print}{additive.iso.est}(obj, ...)
 }
 \arguments{
-\item{obj}{}
-}
-\value{
+\item{obj}{An object with S3 class \code{additive.iso.est}.}
 
+\item{...}{Additional control parameter}
 }
 \description{
-Title
+Inherit print function for \code{additive.iso.est}
+}
+\examples{
+n <- 100*2; x <- matrix(runif(n*2, -1, 1), ncol=2);
+y <- abs(x[,1]) - abs(x[,2]) + rnorm(n, 0, 0.1)
+res.est <- additive.iso.est(x, y)
+print(res.est)
 }
