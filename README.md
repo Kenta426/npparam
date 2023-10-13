@@ -1,5 +1,10 @@
 # npparam
 Code repository for the paper "Semiparametric Shape-restricted Estimators for Nonparametric Regression". See https://arxiv.org/abs/2307.05732 for details.
+To install this `R` package, first install the `devtools` package. Then type:
+
+    library(devtools)
+    devtools::install_github("Kenta426/npparam")
+    library(npparam)
 
 # Usage
 All methods are developed by extending the standard S3 methods.
