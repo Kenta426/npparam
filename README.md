@@ -34,3 +34,13 @@ print(res.est) # display results
 y.pred <- predict(res.est) # fitted value
 y.pred <- predict(res.est, newdata=matrix(runif(n*2, -1, 1), ncol=2)) # predict new data
 ```
+
+## Single-index model with Lipschitz link function
+```{R}
+n <- 100; d <- 3; x <- matrix(runif(n*d, -1, 1), nrow=n);
+beta <- c(1,0,0); y <- sin(4*x%*%beta) + rnorm(n, 0, 0.1)
+res.est <- single.index.est(x, y)
+y.pred <- predict(res.est) # fitted value
+y.pred <- predict(res.est, newdata=matrix(runif(n*d, -1, 1))) # predict new data
+```
+
