@@ -2,12 +2,7 @@
 % Please edit documentation in R/block.iso.lin.est.R
 \name{block.iso.lin.est}
 \alias{block.iso.lin.est}
-\title{Nonparametric LSE for L-Lipschitz function in L2 norm over the 2d lattice.
-The implementation is based on the fixed design setting and currently does
-not support random designs. The core implementation is based on block max-min
-algorithm proposed by Deng and Zhang (2020), which runs O(n^3). Since
-we have to run block max-min algorithm inside of the numerical optimizer,
-this algorithm can take long time to complete.}
+\title{Nonparametric LSE for L-Lipschitz function in L2 norm over the 2d lattice.}
 \usage{
 block.iso.lin.est(x, y, L0 = 100, run.itr = TRUE, ...)
 }
@@ -33,7 +28,6 @@ but it tends to be faster. Default is TRUE.}
 An object with S3 class \code{block.iso.lin.est}.
 }
 \description{
-Nonparametric LSE for L-Lipschitz function in L2 norm over the 2d lattice.
 The implementation is based on the fixed design setting and currently does
 not support random designs. The core implementation is based on block max-min
 algorithm proposed by Deng and Zhang (2020), which runs O(n^3). Since

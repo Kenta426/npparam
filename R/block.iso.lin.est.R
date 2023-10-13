@@ -1,6 +1,7 @@
 # Estimating L-Lipschitz function over 2d lattice.
 
 #' Nonparametric LSE for L-Lipschitz function in L2 norm over the 2d lattice.
+#'
 #' The implementation is based on the fixed design setting and currently does
 #' not support random designs. The core implementation is based on block max-min
 #' algorithm proposed by Deng and Zhang (2020), which runs O(n^3). Since
