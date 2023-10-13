@@ -12,7 +12,7 @@
 #' matrix corresponds to x[i, j] = list(c(a, b)), which takes the value (a, b).
 #' @param y \code{n1 x n2} numeric matrix of observed responses.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param run.itr A Boolean parameter for selecting iterative optimization or
@@ -118,7 +118,7 @@ block.iso.lin.est <- function(x, y, L0=100, run.itr=TRUE,...){
 #' matrix corresponds to x[i, j] = list(c(a, b)), which takes the value (a, b).
 #' @param y \code{n1 x n2} numeric matrix of observed responses.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 .run.optimizer.block.iso <- function(x, y, L0=100){
@@ -146,7 +146,7 @@ block.iso.lin.est <- function(x, y, L0=100, run.itr=TRUE,...){
 #' matrix corresponds to x[i, j] = list(c(a, b)), which takes the value (a, b).
 #' @param y \code{n1 x n2} numeric matrix of observed responses.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 .run.iterative.optimizer.block.iso <- function(x, y, L0=100){
@@ -189,7 +189,7 @@ block.iso.lin.est <- function(x, y, L0=100, run.itr=TRUE,...){
 #' matrix corresponds to x[i, j] = list(c(a, b)), which takes the value (a, b).
 #' @param y \code{n1 x n2} numeric matrix of observed responses.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param run.itr A Boolean parameter for selecting iterative optimization or

@@ -15,7 +15,7 @@ iso.lin.est(x, y, L = NULL, L0 = 100, run.cross.fit = TRUE, rep = 1, ...)
 data-adaptively selected via numerical optimization.}
 
 \item{L0}{The upper bound of the interval of L parameters to search over
-the interval is in the form of \link[=-L0 \\times log10(n), L0 \\times log10(n)]{-L0 \times log10(n), L0 \times log10(n)}.
+the interval is in the form of \link{-L0 x log10(n), L0 x log10(n)}.
 In practice, this should be a large enough constant so the set contains
 the true Lipschitz parameter L.}
 

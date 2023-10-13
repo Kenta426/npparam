@@ -13,7 +13,7 @@ for the linear parameter with crossfitting}
 \item{y}{\code{n x 1} numeric vector of observed response vector.}
 
 \item{L0}{The upper bound of the interval of L parameters to search over
-the interval is in the form of \link[=-L0 \\times log10(n), L0 \\times log10(n)]{-L0 \times log10(n), L0 \times log10(n)}.
+the interval is in the form of \link{-L0 x log10(n), L0 x log10(n)}.
 In practice, this should be a large enough constant so the set contains
 the true Lipschitz parameter L.}
 }

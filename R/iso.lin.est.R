@@ -7,7 +7,7 @@
 #' @param L A scalar for the linear parameter. If not specified, L is
 #'  data-adaptively selected via numerical optimization.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param run.cross.fit A Boolean parameter for selecting sample-splitting or
@@ -57,7 +57,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
 #' @param x \code{n x 1} numeric vector of observed covariate vector.
 #' @param y \code{n x 1} numeric vector of observed response vector.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 .run.optimizer.iso <- function(x, y, L0=100){
@@ -84,7 +84,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
 #' @param x \code{n x 1} numeric vector of observed covariate vector.
 #' @param y \code{n x 1} numeric vector of observed response vector.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 .run.optimizer.iso.cross.fit <- function(x, y, L0=100){
@@ -123,7 +123,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
 #' @param L A scalar for the linear parameter. If not specified, L is
 #'  data-adaptively selected via numerical optimization.
 #' @param L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param run.cross.fit A Boolean parameter for selecting sample-splitting or
