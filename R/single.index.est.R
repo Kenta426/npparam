@@ -5,7 +5,7 @@
 #' @param x \code{n x d} numeric vector of the observed covariate matrix
 #' @param y \code{n x 1} numeric vector of the observed response vector.
 #' @param L0 L0 The upper bound of the interval of L parameters to search over
-#'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
+#'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param ... Additional control parameters.
@@ -69,13 +69,20 @@ single.index.est <- function(x, y, L0=100, ...){
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
 #' @param ...
+#' @export
+#' @examples
+#' n <- 100; d <- 3; x <- matrix(runif(n*d, -1, 1), nrow=n);
+#' beta <- c(1,0,0); y <- sin(4*x%*%beta) + rnorm(n, 0, 0.1)
+#' res.est <- single.index.est(x, y)
+#' y.pred <- predict(res.est) # fitted value
+#' y.pred <- predict(res.est, newdata=matrix(runif(n*d, -1, 1))) # predict new data
 single.index.est.default <- function(x, y, L0=100, ...){
   opt.res <- .run.optimizer.single.index(x, y, L0=L0)
   beta <- opt.res$beta.opt
   est.res <- iso.lin.est(x%*%beta, y, run.cross.fit=F, L0=L0)
   x.vec <- x%*%beta; idx <- order(x.vec); x.vec <- x.vec[idx]; y <- y[idx]
   res <- list(x.values=x, y.values=y,
-              g=est.res, beta=beta, risk=risk)
+              g=est.res, beta=beta, risk=est.res$risk)
   res$call <- match.call()
   class(res) <- "single.index.est"
   return(res)
