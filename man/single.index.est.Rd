@@ -14,7 +14,7 @@ single.index.est(x, y, L0 = 100, ...)
 \item{L0}{L0 The upper bound of the interval of L parameters to search over
 the interval is in the form of \link{-L0 x log10(n), L0 x log10(n)}.
 In practice, this should be a large enough constant so the set contains
-the true Lipschitz parameter L.}
+the true Lipschitz parameter L. Default is TRUE.}
 
 \item{...}{Additional control parameters.}
 }

@@ -7,7 +7,7 @@
 #' @param L0 L0 The upper bound of the interval of L parameters to search over
 #'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
-#'  the true Lipschitz parameter L.
+#'  the true Lipschitz parameter L. Default is TRUE.
 #' @param ... Additional control parameters.
 #'
 #' @return An object with S3 class \code{single.index.est}.
@@ -68,7 +68,7 @@ single.index.est <- function(x, y, L0=100, ...){
 #'  the interval is in the form of [-L0 \times log10(n), L0 \times log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
-#' @param ...
+#' @param ... Additional control parameters.
 #' @export
 #' @examples
 #' n <- 100; d <- 3; x <- matrix(runif(n*d, -1, 1), nrow=n);
