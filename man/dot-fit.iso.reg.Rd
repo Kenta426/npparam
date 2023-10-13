@@ -6,6 +6,13 @@
 \usage{
 .fit.iso.reg(x, y, L)
 }
+\arguments{
+\item{x}{\code{n x 1} numeric vector of observed covariate vector.}
+
+\item{y}{\code{n x 1} numeric vector of observed response vector.}
+
+\item{L}{A scalar for the linear parameter.}
+}
 \description{
 Helper function for fitting isotonic function
 }

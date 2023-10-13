@@ -1,6 +1,6 @@
-# Estimating additive model where each component is L-Lipscitz
+# Estimating additive model where each component is L-Lipschitz
 
-#' Nonparametric LSE for additive L-Lipscitz functions
+#' Nonparametric LSE for additive L-Lipschitz functions
 #'
 #' @param x \code{n x 1} numeric vector of observed covariate vector
 #' @param y \code{n x 1} numeric vector of observed response vector
@@ -79,9 +79,8 @@ additive.iso.est <- function(x, y, L=NULL, ...){
 }
 
 #' Helper function for performing coordinate descent
-.coordinate.descent <- function(x, y){
-  n <- length(y)
-  L.min <- -log10(n); L.max <- log10(n); d <- dim(x)[2]
+.coordinate.descent <- function(x, y, L){
+  n <- dim(x)[1]; d <- dim(x)[2]
   # prepare the initial functions
   g.list <- list()
   for (i in 1:d){
@@ -93,9 +92,9 @@ additive.iso.est <- function(x, y, L=NULL, ...){
   # main loop for coordinate descent
   # run loops until either (1) improvement of the risk between step is small or
   # (2) maximum iteration is reached.
-  while (risk.diff > min(n^-1, 1e-5) && itr.count < 1000){
+  while (risk.diff > 1e-5 && itr.count < 1000){
     # update linear parameter with current list of isotonic functions in g.list
-    L <- .update.linear(x, y, g.list, L.max = L.max, L.min=L.min)
+    # L <- .update.linear(x.train, y.train, g.list, L.max = L.max, L.min=L.min)
     # update list of isotonic functions with current L
     g.list <- .update.additive.isotonic(x, y, g.list, L)
     y.hat <- .predict.additive.iso(g.list, x) + x%*% L
@@ -109,7 +108,33 @@ additive.iso.est <- function(x, y, L=NULL, ...){
               itr=itr.count, y.hat=y.hat))
 }
 
-#' Nonparametric LSE for for additive L-Lipscitz functions
+
+.run.optimizer.additive <- function(x, y, L0=NULL){
+  n <- dim(x)[1]; d <- dim(x)[2]
+  L.min <- -10*log(n); L.max <- 10*log(n); d <- dim(x)[2]
+  # split data into train/validation
+  learn.n <- as.integer(n-sqrt(n))
+  train.id <- sort(sample(seq_len(n), size =learn.n))
+  x.train <- x[train.id, ]; x.val <- x[-train.id, ]
+  y.train <- y[train.id]; y.val <- y[-train.id]
+  sim.one <- function(l){
+    reg.tr <- .coordinate.descent(x.train, y.train, L=l)
+    y.hat <- .predict.additive.iso(reg.tr$g.list, x.val) + x.val%*% l
+    mean((y.val-y.hat)^2)
+  }
+  if (is.null(L0)){
+    opt.res <- optim(rep(0, d), sim.one, lower = L.min, upper = L.max, method = "L-BFGS-B")
+    L0 <-opt.res$par
+  }
+
+  reg.tr <- .coordinate.descent(x.train, y.train, L=L0)
+  y.hat <- .predict.additive.iso(reg.tr$g.list, x.val) + x.val%*% L0
+  risk <- mean((y.val-y.hat)^2)
+  return(list(L=L0, g.list=reg.tr$g.list,
+              risk=risk, converged=opt.res$convergence,
+              itr=0, y.hat=y.hat))
+}
+#' Nonparametric LSE for for additive L-Lipschitz functions
 #'
 #' @param x \code{n x 1} numeric vector of observed covariate vector
 #' @param y \code{n x 1} numeric vector of observed response vector
@@ -121,9 +146,10 @@ additive.iso.est <- function(x, y, L=NULL, ...){
 #' n <- 100*2; x <- matrix(runif(n*2, -1, 1), ncol=2);
 #' y <- abs(x[,1]) - abs(x[,2]) + rnorm(n, 0, 0.1)
 #' res.est <- additive.iso.est(x, y)
-additive.iso.est.default <- function(x, y, ...){
-  n <- dim(x)[1]; d <- dim(x)[2]
-  opt.res <- .coordinate.descent(x, y)
+additive.iso.est.default <- function(x, y, L=NULL,...){
+
+  # opt.res <- .coordinate.descent(x, y)
+  opt.res <- .run.optimizer.additive(x, y, L=L)
   gs <- lapply(opt.res$g.list, function(l){list(g=l$g, dim=l$dim)})
   res <- list(gs = gs, L=opt.res$L, x.values=x, y.values=y,
               itr = opt.res$itr, converged=opt.res$converged,
@@ -179,10 +205,35 @@ predict.additive.iso.est <- function(obj, newdata=NULL){
 }
 
 
-# n <- 500*2; x <- matrix(runif(n*2, -1, 1), ncol=2);
-# d1 <- adaptive.iso(1)
-# y <- d1$fn(x[,1]) - d1$fn(x[,2]) + rnorm(n, 0, 0.1)
-# res.est <- additive.iso.est(x, y)
+# n <- 3000; data <- additive.debug(n, sigma=0)
+# res.est <- additive.iso.est(data$x, data$y)
+# x <- data$x; y <- data$y
+# res.est
 # plot(x, res.est$gs[[1]]$g(x)+res.est$L[1]*x)
 # plot(x, res.est$gs[[2]]$g(x)+res.est$L[2]*x)
-# plot(y, predict(res.est))
+#
+# test.x <- matrix(runif(1e4*2, 0, 1), ncol=2)
+# idx <- order(test.x)
+# test.x[idx]
+# test.y <- data$fn(test.x)
+#
+# log10(mean((test.y-predict(res.est, test.x))^2))
+
+
+# n <- 1000; data <- additive.debug(n, sigma=0)
+# res.est <- additive.iso.est(data$x, data$y)
+# x <- data$x; y <- data$y
+# idx <- order(x[,1])
+# res.est
+# plot(x[,1], res.est$gs[[1]]$g(x[,1])+res.est$L[1]*x[,1])
+# lines(x[idx,1], lipschitz.fn(1)$fn(x[idx,1]))
+# idx <- order(x[,2])
+# plot(x[,2], res.est$gs[[2]]$g(x[,2])+res.est$L[2]*x[,2])
+# lines(x[idx,2], -lipschitz.fn(1)$fn(x[idx,2]))
+#
+# mean((test.y-predict(res.est, test.x))^2)
+# plot(test.y, predict(res.est, test.x))
+
+# plot(x, res.est$gs[[1]]$g(x)+res.est$L[1]*x)
+# plot(x, res.est$gs[[2]]$g(x)+res.est$L[2]*x)
+# plot(x, -lipschitz.fn(1)$fn(x))

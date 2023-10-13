@@ -4,7 +4,7 @@
 \alias{.coordinate.descent}
 \title{Helper function for performing coordinate descent}
 \usage{
-.coordinate.descent(x, y)
+.coordinate.descent(x, y, L)
 }
 \description{
 Helper function for performing coordinate descent

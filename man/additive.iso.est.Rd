@@ -2,7 +2,7 @@
 % Please edit documentation in R/additive.iso.est.R
 \name{additive.iso.est}
 \alias{additive.iso.est}
-\title{Nonparametric LSE for additive L-Lipscitz functions}
+\title{Nonparametric LSE for additive L-Lipschitz functions}
 \usage{
 additive.iso.est(x, y, L = NULL, ...)
 }
@@ -15,7 +15,7 @@ additive.iso.est(x, y, L = NULL, ...)
 An object with S3 class \code{additive.iso.est}.
 }
 \description{
-Nonparametric LSE for additive L-Lipscitz functions
+Nonparametric LSE for additive L-Lipschitz functions
 }
 \examples{
 n <- 100*2; x <- matrix(runif(n*2, -1, 1), ncol=2);

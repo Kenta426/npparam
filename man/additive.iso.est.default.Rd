@@ -2,9 +2,9 @@
 % Please edit documentation in R/additive.iso.est.R
 \name{additive.iso.est.default}
 \alias{additive.iso.est.default}
-\title{Nonparametric LSE for for additive L-Lipscitz functions}
+\title{Nonparametric LSE for for additive L-Lipschitz functions}
 \usage{
-\method{additive.iso.est}{default}(x, y, ...)
+\method{additive.iso.est}{default}(x, y, L = NULL, ...)
 }
 \arguments{
 \item{x}{\code{n x 1} numeric vector of observed covariate vector}
@@ -15,7 +15,7 @@
 An object with S3 class \code{additive.iso.est}.
 }
 \description{
-Nonparametric LSE for for additive L-Lipscitz functions
+Nonparametric LSE for for additive L-Lipschitz functions
 }
 \examples{
 n <- 100*2; x <- matrix(runif(n*2, -1, 1), ncol=2);

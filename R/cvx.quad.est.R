@@ -25,11 +25,17 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
 #' Helper function for fitting convex (or concave) function
 .fit.cvx.reg <- function(x, y, L){
   # Find convex LSE.
-  cvx_final <- simest::cvx.lse.reg(x, y - L*x^2)
-  cvx.risk <- mean((y - cvx_final$fit.values - L*x^2)^2)
+  # cvx_final <- simest::cvx.lse.reg(x, y - L*x^2)
+  cvx_final <- cobs::conreg(x, y - L*x^2, convex = TRUE)
+  # cvx.risk <- mean((y - cvx_final$fit.values - L*x^2)^2)
+  cvx.risk <- mean((y - predict(cvx_final, x) - L*x^2)^2)
+
   # Find concave LSE.
-  concave_final <- simest::cvx.lse.reg(x, -(y - L*x^2))
-  concave.risk <- mean((y + concave_final$fit.values - L*x^2)^2)
+  # concave_final <- simest::cvx.lse.reg(x, -(y - L*x^2))
+  concave_final <- cobs::conreg(x, -(y - L*x^2))
+  # concave.risk <- mean((y + concave_final$fit.values - L*x^2)^2)
+  concave.risk <- mean((y + predict(cvx_final, x) - L*x^2)^2)
+
   # pick estimator with smaller empirical risk.
   if(cvx.risk < concave.risk){
     cvx_model <- cvx_final; risk <- cvx.risk; convex <- TRUE
@@ -47,13 +53,13 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   x.train <- x[train.id]; x.val <- x[-train.id]
   y.train <- y[train.id]; y.val <- y[-train.id]
   # create a list of L values to run CV
-  L.list <- seq(-10*log10(n), 10*log10(n), length.out=n/20)
+  L.list <- seq(-log10(n), log10(n), length.out=n/20)
   sim.one <- function(l){
     reg.tr <- .fit.cvx.reg(x.train, y.train, L=l)
     if(reg.tr$convex){
-      y.hat <- predict(reg.tr$reg, newdata=x.val) + l * x.val^2
+      y.hat <- predict(reg.tr$reg, x.val) + l * x.val^2
     }else{
-      y.hat <- -predict(reg.tr$reg, newdata=x.val) + l * x.val^2
+      y.hat <- -predict(reg.tr$reg, x.val) + l * x.val^2
     }
     mean((y.val-y.hat)^2)
   }
@@ -72,16 +78,16 @@ cvx.quad.est <- function(x, y, L=NULL, run.optim=TRUE, ...){
   sim.one <- function(l){
     reg.tr <- .fit.cvx.reg(x.train, y.train, L=l)
     if(reg.tr$convex){
-      y.hat <- predict(reg.tr$reg, newdata=x.val) + l * x.val^2
+      y.hat <- predict(reg.tr$reg, x.val) + l * x.val^2
     }else{
-      y.hat <- -predict(reg.tr$reg, newdata=x.val) + l * x.val^2
+      y.hat <- -predict(reg.tr$reg, x.val) + l * x.val^2
     }
     mean((y.val-y.hat)^2)
   }
   # run optimizer to find the best L parameter
   cat("running optimizer...")
-  opt.res <- optimise(sim.one, lower = -log10(n), upper = log10(n),
-                      maximum = FALSE)
+  opt.res <- optimise(sim.one, lower = -10*log10(n), upper = 10*log10(n),
+                      maximum = FALSE, tol = 0.1)
   # return L with the smallest validation error
   return(list(l.opt = opt.res$minimum, risk =opt.res$objective))
 }
@@ -165,9 +171,9 @@ predict.cvx.quad.est <- function(object, newdata=NULL){
     newdata <- object$x
   }
   if(object$convex){
-    y.hat <- predict(object$g, newdata=newdata) + object$l.value * newdata^2
+    y.hat <- predict(object$g, newdata) + object$l.value * newdata^2
   }else{
-    y.hat <- -predict(object$g, newdata=newdata) + object$l.value * newdata^2
+    y.hat <- -predict(object$g, newdata) + object$l.value * newdata^2
   }
   return(y.hat)
 }

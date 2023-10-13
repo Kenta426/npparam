@@ -4,18 +4,27 @@
 \alias{iso.lin.est.default}
 \title{Nonparametric LSE for Lipschitz function}
 \usage{
-\method{iso.lin.est}{default}(x, y, L = NULL, run.optim = TRUE, ...)
+\method{iso.lin.est}{default}(x, y, L = NULL, L0 = 100, run.cross.fit = TRUE, rep = 1, ...)
 }
 \arguments{
-\item{x}{\code{n x 1} numeric vector of observed covariate vector}
+\item{x}{\code{n x 1} numeric vector of the observed covariate vector.}
 
-\item{y}{\code{n x 1} numeric vector of observed response vector}
+\item{y}{\code{n x 1} numeric vector of the observed response vector.}
 
 \item{L}{A scalar for the linear parameter. If not specified, L is
-data-adaptively selected via optimization or cross-validation}
+data-adaptively selected via numerical optimization.}
 
-\item{run.optim}{A Boolean parameter for selecting optimization or
-cross-validation. If TRUE, it performs optimization. Default is TRUE.}
+\item{L0}{The upper bound of the interval of L parameters to search over
+the interval is in the form of \link[=-L0 \\times log10(n), L0 \\times log10(n)]{-L0 \times log10(n), L0 \times log10(n)}.
+In practice, this should be a large enough constant so the set contains
+the true Lipschitz parameter L.}
+
+\item{run.cross.fit}{A Boolean parameter for selecting sample-splitting or
+cross-fitting If TRUE, it performs cross-fitting Default is TRUE.}
+
+\item{rep}{When rep > 1, the sample-splitting is performed multiple times.
+This procedure can reduce the randomness due to the index of sample
+splitting.}
 
 \item{...}{Additional control parameters}
 }
