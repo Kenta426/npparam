@@ -49,3 +49,17 @@ y.pred <- predict(res.est) # fitted value
 y.pred <- predict(res.est, newdata=matrix(runif(n*d, -1, 1))) # predict new data
 ```
 
+## Lipschitz function over fixed-design 2d lattice based on block max-min algorithm (Deng and Zhang (2020))
+```{R}
+n1 <- 10; n2 <- 10
+y <- matrix(rep(0, n1*n2), nrow = n1)
+x <- matrix(rep(list(), n1*n2),nrow = n1, ncol =n2)
+for (i in 1:n1){
+    for (j in 1:n2){
+        y[i,j] <- sin(10*norm(c(i/n1, j/n2), "2")) + rnorm(1, 0, 0.1)
+        x[i,j] <- list(c(i/n1, j/n2))
+    }
+}
+res.est <- block.iso.lin.est(x, y)
+y.hat <- predict(res.est) # estimated values over the grid.
+```
