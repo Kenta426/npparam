@@ -24,7 +24,7 @@
 #' res.est <- iso.lin.est(x, y)
 #' y.pred <- predict(res.est) # fitted value
 #' y.pred <- predict(res.est, newdata=runif(n, -1, 1)) # predict new data
-iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
+iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=FALSE, rep=1,...){
   UseMethod("iso.lin.est")
 }
 
@@ -60,7 +60,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
 #'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
-.run.optimizer.iso <- function(x, y, L0=100){
+.run.optimizer.iso <- function(x, y, L0=Inf){
   # split data into train/validation
   n <- length(x); learn.n <- as.integer(n-1/2*(n))
   train.id <- sort(sample(seq_len(n), size=learn.n))
@@ -72,10 +72,9 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
     mean((y.val-y.hat)^2)
   }
   # run optimizer to find the best L parameter
-  opt.res <- optimise(sim.one, lower=-L0*log10(n), upper=L0*log10(n),
-                      maximum = FALSE)
+  opt.res <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
   # return L with the smallest validation error
-  return(list(l.opt=opt.res$minimum, risk=opt.res$objective))
+  return(list(l.opt=opt.res$par, risk=opt.res$value))
 }
 
 #' Helper function for running an optimizer
@@ -87,7 +86,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
 #'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
-.run.optimizer.iso.cross.fit <- function(x, y, L0=100){
+.run.optimizer.iso.cross.fit <- function(x, y, L0=Inf){
   # split data into train/validation
   n <- length(x); learn.n <- as.integer(n-1/2*(n))
   train.id <- sort(sample(seq_len(n), size=learn.n))
@@ -100,8 +99,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
     mean((y.val-y.hat)^2)
   }
   # run optimizer to find the best L parameter
-  opt.res.1 <- optimise(sim.one, lower=-L0*log10(n), upper=L0*log10(n),
-                      maximum = FALSE)
+  opt.res.1 <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
   # then compute another model after swapping the role of train/val sets
   sim.one <- function(l){
     reg.tr <- .fit.iso.reg(x.val, y.val, L=l)
@@ -109,11 +107,10 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
     mean((y.train-y.hat)^2)
   }
   # run optimizer to find the best L parameter
-  opt.res.2 <- optimise(sim.one, lower=-L0*log10(n), upper=L0*log10(n),
-                      maximum = FALSE)
+  opt.res.2 <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
   # return two models
-  return(list(l.opt=c(opt.res.1$minimum, opt.res.2$minimum),
-              risk=c(opt.res.1$objective, opt.res.2$objective)))
+  return(list(l.opt=c(opt.res.1$par, opt.res.2$par),
+              risk=c(opt.res.1$value, opt.res.2$value)))
 }
 
 #' Nonparametric LSE for Lipschitz function
