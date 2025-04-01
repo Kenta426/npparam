@@ -86,31 +86,31 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=FALSE, rep=1,...){
 #'  the interval is in the form of [-L0 x log10(n), L0 x log10(n)].
 #'  In practice, this should be a large enough constant so the set contains
 #'  the true Lipschitz parameter L.
-.run.optimizer.iso.cross.fit <- function(x, y, L0=Inf){
+.run.optimizer.iso.cross.fit <- function(x, y, L0=Inf, K=2){
   # split data into train/validation
   n <- length(x); learn.n <- as.integer(n-1/2*(n))
-  train.id <- sort(sample(seq_len(n), size=learn.n))
-  x.train <- x[train.id]; x.val <- x[-train.id]
-  y.train <- y[train.id]; y.val <- y[-train.id]
-  # first compute one model
-  sim.one <- function(l){
-    reg.tr <- .fit.iso.reg(x.train, y.train, L=l)
-    y.hat <- reg.tr$reg(x.val) + l*x.val
-    mean((y.val-y.hat)^2)
+  folds <- caret::createFolds(y, k = K)
+  L.list <- c()
+  risk.list <- c()
+  for (i in 1:K){
+    idx <- folds[[i]]
+    x.train <- x[-idx]; x.val <- x[idx]
+    y.train <- y[-idx]; y.val <- y[idx]
+
+    # first compute one model
+    sim.one <- function(l){
+      reg.tr <- .fit.iso.reg(x.train, y.train, L=l)
+      y.hat <- reg.tr$reg(x.val) + l*x.val
+      mean((y.val-y.hat)^2)
+    }
+    # run optimizer to find the best L parameter
+    opt.res.1 <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
+    L.list <- c(L.list, opt.res.1$par)
+    risk.list <- c(risk.list, opt.res.1$value)
   }
-  # run optimizer to find the best L parameter
-  opt.res.1 <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
-  # then compute another model after swapping the role of train/val sets
-  sim.one <- function(l){
-    reg.tr <- .fit.iso.reg(x.val, y.val, L=l)
-    y.hat <- reg.tr$reg(x.train) + l*x.train
-    mean((y.train-y.hat)^2)
-  }
-  # run optimizer to find the best L parameter
-  opt.res.2 <- optim(par=c(0), fn=sim.one, lower=-L0, upper=L0, method="L-BFGS-B")
-  # return two models
-  return(list(l.opt=c(opt.res.1$par, opt.res.2$par),
-              risk=c(opt.res.1$value, opt.res.2$value)))
+  L.list <- mean(L.list)
+  return(list(l.opt=L.list,
+              risk=risk.list))
 }
 
 #' Nonparametric LSE for Lipschitz function
@@ -137,7 +137,7 @@ iso.lin.est <- function(x, y, L=NULL, L0=100, run.cross.fit=FALSE, rep=1,...){
 #' x <- runif(n, -1, 1)
 #' y <- sin(x*4) + rnorm(n, 0, 0.1)
 #' res.est <- iso.lin.est(x, y)
-iso.lin.est.default <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,...){
+iso.lin.est.default <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, K=2,...){
   # TODO: check input format
   idx <- order(x); x <- x[idx]; y <- y[idx]
   # select parameter selection procedure
@@ -148,12 +148,11 @@ iso.lin.est.default <- function(x, y, L=NULL, L0=100, run.cross.fit=TRUE, rep=1,
   }
   # run parameter selection if L is not specified
   if(is.null(L)){
-    L <- param.selector(x, y, L0=L0)$l.opt
-    if (run.cross.fit & (rep > 1)){
-      # repeated sampling
-      for (i in 1:(ceiling(rep)-1)){
-        L <- c(L, param.selector(x, y)$l.opt)
-      }
+    if (run.cross.fit){
+      L <- param.selector(x, y, L0=L0, K=K)$l.opt
+    }
+    else{
+      L <- param.selector(x, y, L0=L0)$l.opt
     }
   }
   # fit isotonic regression
